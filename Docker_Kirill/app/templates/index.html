@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Динамическое обновление контента</title>
+    <meta charset="UTF-8">
+    <style>
+        body { 
+            font-family: Arial; 
+            margin: 40px; 
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .content-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        img { 
+            max-width: 100%;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            padding: 5px;
+        }
+        .update-time {
+            color: #666;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Динамическое обновление контента</h1>
+        
+        <div class="content-box">
+            <h2>Текущая информация:</h2>
+            <p id="info-text">{{ info }}</p>
+            <div class="form-group">
+                <textarea id="new-info" rows="4" style="width: 100%"></textarea>
+                <button onclick="updateInfo()">Обновить информацию</button>
+            </div>
+        </div>
+
+        <div class="content-box">
+            <h2>Текущее изображение:</h2>
+            <img src="/images/{{ image }}" alt="Текущее изображение">
+            <div class="form-group">
+                <input type="file" id="new-image" accept="image/*">
+                <button onclick="uploadImage()">Загрузить новое изображение</button>
+            </div>
+        </div>
+
+        <div class="update-time">
+            Последнее обновление: {{ last_update }}
+        </div>
+    </div>
+
+    <script>
+        async function updateInfo() {
+            const newInfo = document.getElementById('new-info').value;
+            const response = await fetch('/update_info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `info=${encodeURIComponent(newInfo)}`
+            });
+            if (response.ok) {
+                location.reload();
+            }
+        }
+
+        async function uploadImage() {
+            const fileInput = document.getElementById('new-image');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch('/upload_image', {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
